@@ -1,18 +1,13 @@
 module Deptree
   module DSL
 
-    def self.extended(host)
-      host.instance_eval do
-        @registry = Deptree::Registry.new
-      end
-    end
-
-    def dependency(*args)
-
+    def dependency(name_and_prerequisites, &block)
+      dependency = DefinitionContext.define_dependency(name_and_prerequisites, &block)
+      dependencies.add(dependency.name, dependency)
     end
 
     def dependencies
-      @registry
+      @dependencies ||= Deptree::Registry.new
     end
   end
 end
