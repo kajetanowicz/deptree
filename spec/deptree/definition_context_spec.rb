@@ -31,6 +31,15 @@ module Deptree
         end
       end
 
+      context 'when the dependency name is a Symbol' do
+        it 'sets correct name and prerequisites' do
+          dependency = DefinitionContext.define_dependency(:foo => ['bar', 'baz'])
+
+          expect(dependency.name).to eq(:foo)
+          expect(dependency.prerequisites).to eq(['bar', 'baz'])
+        end
+      end
+
       context 'when passing invalid arguments' do
         it 'raises an exception' do
           expect { DefinitionContext.define_dependency('foo' => 'bar', 'bar' => 'baz') }.

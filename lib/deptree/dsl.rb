@@ -1,9 +1,10 @@
 module Deptree
   module DSL
 
-    def dependency(name_and_prerequisites, &block)
-      dependency = DefinitionContext.define_dependency(name_and_prerequisites, &block)
-      dependencies.add(dependency.name, dependency)
+    def dependency(*args, &block)
+      DefinitionContext.define_dependency(*args, &block).tap do |dependency|
+        dependencies.add(dependency.name, dependency)
+      end
     end
 
     def dependencies
