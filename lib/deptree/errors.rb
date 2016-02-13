@@ -14,4 +14,9 @@ module Deptree
     end
   end
 
+  class DuplicateActionError < Error
+    def initialize(dependency, action)
+      super("Dependency #{dependency} has already defined an action #{action}")
+    end
+  end
 end
