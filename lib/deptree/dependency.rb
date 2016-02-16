@@ -7,29 +7,42 @@ module Deptree
 
     def initialize(name, prerequisites = [])
       @name = name
-      @actions = []
       @prerequisites = prerequisites
+      @actions = Actions.new(self)
       @execution_context = Object.new
     end
 
     def add_action(name, *args, &behaviour)
-      Action.new(name, args, behaviour).tap do |action|
-        if actions.member?(action)
-          fail DuplicateActionError.new(@name, action.name)
-        else
-          actions << action
-        end
-      end
+      @actions.add(name, args, behaviour)
     end
 
     def run_action(name)
-      if ( action = find(name) )
+      if ( action = @actions.find(name) )
         action.run(@execution_context)
       end
     end
 
-    def find(name)
-      actions.find { |a| a.name == name }
+    class Actions
+
+      def initialize(dependency)
+        @dependency, @actions = dependency, []
+      end
+
+      def add(name, *args, behaviour)
+        if find(name)
+          fail DuplicateActionError.new(@dependency.name, name)
+        else
+          Action.new(name, args, behaviour).tap { |action| @actions << action }
+        end
+      end
+
+      def find(name)
+        @actions.find { |a| a.name == name }
+      end
+
+      def size
+        @actions.size
+      end
     end
 
     class Action
