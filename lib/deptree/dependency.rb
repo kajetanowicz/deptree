@@ -7,20 +7,20 @@ module Deptree
 
     def initialize(name, prerequisites = [])
       @name = name
+      @actions = []
       @prerequisites = prerequisites
-      @actions = Set.new
     end
 
     def add_action(name, *args, &behaviour)
-      action = Action.new(name, args, behaviour)
+      Action.new(name, args, behaviour).tap do |action|
 
-      if actions.member?(action)
-        fail DuplicateActionError.new(@name, action.name)
-      else
-        actions << action
+        if actions.member?(action)
+          fail DuplicateActionError.new(@name, action.name)
+        else
+          actions << action
+        end
+
       end
-
-      action
     end
 
     class Action
@@ -33,13 +33,10 @@ module Deptree
         @args = args
       end
 
-      def eql?(other)
+      def ==(other)
         name == other.name
       end
 
-      def hash
-        name.hash
-      end
     end
 
   end
