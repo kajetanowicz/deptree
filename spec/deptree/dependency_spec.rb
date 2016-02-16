@@ -18,5 +18,30 @@ module Deptree
         }.to raise_error(DuplicateActionError, /foo.*configure/)
       end
     end
+
+    describe '#run_action' do
+      it 'executes an action' do
+        expect do |blk|
+          dependency.add_action(:foo, &blk)
+          dependency.run_action(:foo)
+        end.to yield_control.once
+      end
+
+      it 'runs different actions in the same context' do
+        ctx = self
+        ctx1 = ctx2 = nil
+
+        dependency.add_action(:action1) { ctx1 = self }
+        dependency.add_action(:action2) { ctx2 = self }
+
+        dependency.run_action(:action1)
+        dependency.run_action(:action2)
+
+        expect(ctx1).to eql(ctx2)
+        expect(ctx).not_to eql(ctx1)
+        expect(ctx).not_to eql(ctx2)
+      end
+
+    end
   end
 end
