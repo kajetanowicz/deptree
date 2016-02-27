@@ -19,4 +19,10 @@ module Deptree
       super("Dependency #{dependency} has already defined an action #{action}")
     end
   end
+
+  class DuplicateDependencyError < Error
+    def initialize(name)
+      super("Dependency #{name} has bee already added.")
+    end
+  end
 end
