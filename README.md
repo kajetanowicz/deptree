@@ -1,4 +1,5 @@
 # Deptree
+[![Build Status](https://travis-ci.org/kajetanowicz/deptree.svg?branch=master)](https://travis-ci.org/kajetanowicz/deptree)
 
 TODO: Write a gem description
 

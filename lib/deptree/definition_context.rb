@@ -15,7 +15,7 @@ module Deptree
     end
 
     def method_missing(name, *args, &behaviour)
-      @dependency.add_action(name, args, behaviour)
+      @dependency.add_action(name, *args, &behaviour)
     end
   end
 end

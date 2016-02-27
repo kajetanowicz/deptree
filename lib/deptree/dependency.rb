@@ -13,7 +13,7 @@ module Deptree
     end
 
     def add_action(name, *args, &behaviour)
-      @actions.add(name, args, behaviour)
+      @actions.add(name, args, &behaviour)
     end
 
     def run_action(name)
@@ -28,11 +28,11 @@ module Deptree
         @dependency, @actions = dependency, []
       end
 
-      def add(name, *args, behaviour)
+      def add(name, args, &behaviour)
         if find(name)
           fail DuplicateActionError.new(@dependency.name, name)
         else
-          Action.new(name, args, behaviour).tap { |action| @actions << action }
+          Action.new(name, args, &behaviour).tap { |action| @actions << action }
         end
       end
 
@@ -48,7 +48,7 @@ module Deptree
     class Action
       attr_reader :name
 
-      def initialize(name, args, behaviour)
+      def initialize(name, args, &behaviour)
         @name = name
         @behaviour = behaviour
         @options = args.last.is_a?(Hash) ? args.pop : {}
