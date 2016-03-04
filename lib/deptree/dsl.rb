@@ -7,6 +7,10 @@ module Deptree
       end
     end
 
+    def configure(*names)
+      dependencies.find(names).map { |dep| dep.run_action(:configure) }
+    end
+
     def dependencies
       @dependencies ||= Deptree::Registry.new
     end

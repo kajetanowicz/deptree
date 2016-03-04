@@ -7,13 +7,26 @@ module Deptree
 
     def add(name, dependency)
       fail DuplicateDependencyError.new(name) if include?(name)
+      @dependencies.store(normalize(name), dependency)
+    end
 
-      @dependencies.store(name, dependency)
+    def find(names = [])
+      if names.empty?
+        @dependencies.values
+      else
+        names.inject(Array.new) do |deps, name|
+          deps << @dependencies.fetch(normalize(name))
+        end
+      end
     end
 
     def include?(name)
       @dependencies.has_key?(name)
     end
 
+    private
+    def normalize(name)
+      name.to_s
+    end
   end
 end
