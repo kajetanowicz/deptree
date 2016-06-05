@@ -19,22 +19,44 @@ describe Deptree::Registry do
   end
 
   describe '#find' do
-    before {
-      registry.add('name1', double('Dependency1'))
-      registry.add('name2', double('Dependency2'))
-    }
+    before do
+      registry.add('dep1', double('Dependency1'))
+      registry.add('dep2', double('Dependency2'))
+      registry.add('dep3', double('Dependency3'))
+    end
 
-    context 'when passed an empty list' do
-      it 'returns all dependencies' do
-        expect(registry.find([]).size).to eq 2
+    it 'returns all dependencies specified on the list' do
+      expect(registry.find(['dep1', 'dep3']).size).to eq 2
+    end
+
+    it 'accepts names as symbols' do
+      expect(registry.find([:dep1]).size).to eq 1
+    end
+
+    context 'when trying to find non-existing dependency' do
+      it 'raises an exception' do
+        expect { registry.find(['non-existing']) }.
+          to raise_error(KeyError, /non-existing/)
       end
     end
 
-    context 'when passed a list that contains names' do
-      it 'returns all dependencies' do
-        expect(registry.find([:name1]).size).to eq 1
+    context 'when passed an empty list' do
+      it 'returns an empty list' do
+        expect(registry.find([])).to eq []
       end
     end
   end
-end
 
+  describe '#all' do
+    before do
+      registry.add('dep1', double('Dependency1'))
+      registry.add('dep2', double('Dependency2'))
+      registry.add('dep3', double('Dependency3'))
+      registry.add('dep4', double('Dependency4'))
+    end
+
+    it 'returns all registered dependencies' do
+      expect(registry.all.size).to eq 4
+    end
+  end
+end

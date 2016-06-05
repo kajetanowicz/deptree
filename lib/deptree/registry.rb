@@ -11,13 +11,11 @@ module Deptree
     end
 
     def find(names = [])
-      if names.empty?
-        @dependencies.values
-      else
-        names.inject(Array.new) do |deps, name|
-          deps << @dependencies.fetch(normalize(name))
-        end
-      end
+      names.map { |name| @dependencies.fetch(normalize(name)) }
+    end
+
+    def all
+      @dependencies.values
     end
 
     def include?(name)

@@ -5,7 +5,7 @@ module Deptree
 
     describe '#add_action' do
       it 'returns an Action' do
-        action = dependency.add_action(:configure, :arg1, :arg2) do; end
+        action = dependency.add_action(:configure) do; end
 
         expect(action).to be_an(Dependency::Action)
         expect(action.name).to eq :configure
@@ -13,18 +13,19 @@ module Deptree
 
       it 'does not allow to define an action with the same name twice' do
         expect {
-          dependency.add_action(:configure)
-          dependency.add_action(:configure)
+          dependency.add_action(:configure) do; end
+          dependency.add_action(:configure) do; end
         }.to raise_error(DuplicateActionError, /foo.*configure/)
       end
     end
 
     describe '#run_action' do
       it 'executes an action' do
-        expect do |blk|
+        expect { |blk|
           dependency.add_action(:foo, &blk)
           dependency.run_action(:foo)
-        end.to yield_control.once
+
+        }.to yield_control.once
       end
 
       it 'runs different actions in the same context' do
@@ -41,7 +42,6 @@ module Deptree
         expect(ctx).not_to eql(ctx1)
         expect(ctx).not_to eql(ctx2)
       end
-
     end
   end
 end

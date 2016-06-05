@@ -1,9 +1,7 @@
 module Deptree
   class Dependency
 
-    attr_reader :name
-    attr_reader :prerequisites
-    attr_reader :actions
+    attr_reader :name, :prerequisites, :actions
 
     def initialize(name, prerequisites = [])
       @name = name
@@ -12,13 +10,13 @@ module Deptree
       @execution_context = Object.new
     end
 
-    def add_action(name, *args, &behaviour)
-      @actions.add(name, args, &behaviour)
+    def add_action(name, &behaviour)
+      @actions.add(name, behaviour, @execution_context)
     end
 
     def run_action(name)
-      if ( action = @actions.find(name) )
-        action.run(@execution_context)
+      if (action = @actions.find(name))
+        action.run
       end
     end
 
@@ -28,11 +26,11 @@ module Deptree
         @dependency, @actions = dependency, []
       end
 
-      def add(name, args, &behaviour)
+      def add(name, behaviour, execution_context)
         if find(name)
           fail DuplicateActionError.new(@dependency.name, name)
         else
-          Action.new(name, args, &behaviour).tap { |action| @actions << action }
+          Action.new(name, behaviour, execution_context).tap { |action| @actions << action }
         end
       end
 
@@ -48,22 +46,19 @@ module Deptree
     class Action
       attr_reader :name
 
-      def initialize(name, args, &behaviour)
+      def initialize(name, behaviour, context)
         @name = name
         @behaviour = behaviour
-        @options = args.last.is_a?(Hash) ? args.pop : {}
-        @args = args
+        @context = context
       end
 
-      def run(ctx)
-        ctx.instance_eval(&@behaviour)
+      def run
+        @context.instance_eval(&@behaviour)
       end
 
       def ==(other)
         name == other.name
       end
-
     end
-
   end
 end
