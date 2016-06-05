@@ -1,4 +1,7 @@
-# Deptree
+
+NOTE: This is still work in progress. If you wish to contribute to this project, take a look at the [Contributing](# contributing) section below.
+
+# Deptree 
 [![Build Status](https://travis-ci.org/kajetanowicz/deptree.svg?branch=master)](https://travis-ci.org/kajetanowicz/deptree)
 
 TODO: Write a gem description
@@ -21,7 +24,7 @@ Or install it yourself as:
 
 ## Usage
 
-1. Define all the configuration dependencies required by your application:
+##### Define all the configuration dependencies required by your application:
 
 ```ruby
 module Application
@@ -29,7 +32,7 @@ module Application
 
   dependency :config do
     configure do
-      Application.config = # ... load configuration
+      Application.config = YAML.load_file('config.yml')[environment]
     end
   end
 
@@ -39,24 +42,22 @@ module Application
     end
   end
 
-  dependency :webservices => [:webservice1, :webservice2]
-
-  dependency :webservice1 => [:logger, :config] do
+  dependency :some_api => [:logger, :config] do
     configure do
-      WebService1::Client.logger = Application.logger
-      WebService1::Client.host = Application.config.webservice1_host
+      SomeAPI::Client.logger = Application.logger
+      SomeAPI::Client.host = Application.config.some_api_host
     end
   end
-
-  dependency :webservice2 => [:config] do
-    configure do
-      WebService2::Client.host = Application.config.webservice2_host
+  
+  helpers do
+    def environment
+      ENV['RACK_ENV'] || 'development'
     end
   end
 end
 ```
 
-2. Trigger dependency resolution when the application starts:
+##### Trigger dependency resolution when the application starts:
 
 ```ruby
 
@@ -65,6 +66,10 @@ end
 require 'application'
 
 Application.configure
+# At this point all the configuration steps required by your application
+# will have run in correct order
+
+# Start your application
 Application.run!
 
 ```
@@ -73,8 +78,8 @@ Alternatively, you can choose to configure only specific dependencies:
 
 ```ruby
 
-Application.configure(:logger, :webservice2)
-# NOTE: config will be automatically loaded since both (logger and webservice2) depend on it.
+Application.configure(:logger, :some_api)
+# NOTE: config will be automatically loaded since both (logger and some_api) depend on it.
 
 ```
 
