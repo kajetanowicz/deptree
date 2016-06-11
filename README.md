@@ -1,5 +1,5 @@
 
-NOTE: This is still work in progress. If you wish to contribute to this project, take a look at the [Contributing](# contributing) section below.
+NOTE: This is still work in progress. If you wish to contribute to this project, take a look at the [Contributing](#contributing) section below.
 
 # Deptree 
 [![Build Status](https://travis-ci.org/kajetanowicz/deptree.svg?branch=master)](https://travis-ci.org/kajetanowicz/deptree)
