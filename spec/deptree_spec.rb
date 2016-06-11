@@ -95,15 +95,108 @@ describe '.configure' do
     application = Class.new do
       extend Deptree::DSL
 
-      dependency :two do
-        configure { called << :two }
-      end
       dependency :three => :two do
         configure { called << :three }
+      end
+      dependency :two do
+        configure { called << :two }
       end
     end
 
     application.configure
     expect(called.index(:two)).to be < called.index(:three)
+  end
+
+  it 'handles 3 ordered dependencies ' do
+    called = []
+    application = Class.new do
+      extend Deptree::DSL
+
+      dependency :three => :two do
+        configure { called << :three }
+      end
+      dependency :four => :three do
+        configure { called << :four }
+      end
+      dependency :two do
+        configure { called << :two }
+      end
+    end
+
+    application.configure
+    expect(called.index(:two)).to be < called.index(:three)
+    expect(called.index(:three)).to be < called.index(:four)
+  end
+
+  it 'handles 6 ordered dependencies ' do
+    called = []
+    application = Class.new do
+      extend Deptree::DSL
+
+      dependency :five => [:six, :four] do
+        configure { called << :five }
+      end
+      dependency :six do
+        configure { called << :six }
+      end
+      dependency :three => :two do
+        configure { called << :three }
+      end
+      dependency :four => :two do
+        configure { called << :four }
+      end
+      dependency :two do
+        configure { called << :two }
+      end
+      dependency :one => :five do
+        configure { called << :one }
+      end
+    end
+
+    application.configure
+    expect(called.index(:four)).to be < called.index(:five)
+    expect(called.index(:five)).to be < called.index(:one)
+    expect(called.index(:two)).to be < called.index(:one)
+  end
+
+  it 'detects indirect circular dependencies' do
+    application = Class.new do
+      extend Deptree::DSL
+
+      dependency :five => :four do
+        configure { called << :five }
+      end
+      dependency :six => [:five] do
+        configure { called << :six }
+      end
+      dependency :three => :two do
+        configure { called << :three }
+      end
+      dependency :four => :three do
+        configure { called << :four }
+      end
+      dependency :two => :one do
+        configure { called << :two }
+      end
+      dependency :one => :five do
+        configure { called << :one }
+      end
+    end
+
+    expect { application.configure }.
+      to raise_error(Deptree::CircularDependencyError)
+  end
+
+  it 'detects when dependency in linked to itself' do
+    application = Class.new do
+      extend Deptree::DSL
+
+      dependency :one => :one do
+        configure { called << :one }
+      end
+    end
+
+    expect { application.configure }.
+      to raise_error(Deptree::CircularDependencyError)
   end
 end
