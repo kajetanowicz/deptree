@@ -14,7 +14,7 @@ module Deptree
         runnables = names.map { |name| dependencies.find(name) }
       end
 
-      Resolver.resolve(runnables).map do |dependency|
+      Resolver.resolve(runnables, dependencies).map do |dependency|
         dependency.run_action(:configure)
       end
     end
