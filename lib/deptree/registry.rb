@@ -10,8 +10,8 @@ module Deptree
       @dependencies.store(normalize(name), dependency)
     end
 
-    def find(names = [])
-      names.map { |name| @dependencies.fetch(normalize(name)) }
+    def find(name)
+      @dependencies.fetch(normalize(name))
     end
 
     def all

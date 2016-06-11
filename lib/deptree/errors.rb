@@ -19,4 +19,10 @@ module Deptree
       super("Dependency #{name} has already been added.")
     end
   end
+
+  class CircularDependencyError < Error
+    def initialize
+      super("Circular dependency detected")
+    end
+  end
 end

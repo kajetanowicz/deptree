@@ -20,29 +20,23 @@ describe Deptree::Registry do
 
   describe '#find' do
     before do
-      registry.add('dep1', double('Dependency1'))
-      registry.add('dep2', double('Dependency2'))
-      registry.add('dep3', double('Dependency3'))
+      registry.add('dep1', Deptree::Dependency.new('Dependency1'))
+      registry.add('dep2', Deptree::Dependency.new('Dependency2'))
+      registry.add('dep3', Deptree::Dependency.new('Dependency3'))
     end
 
-    it 'returns all dependencies specified on the list' do
-      expect(registry.find(['dep1', 'dep3']).size).to eq 2
+    it 'finds dependency by name' do
+      expect(registry.find('dep1').name).to eq 'Dependency1'
     end
 
-    it 'accepts names as symbols' do
-      expect(registry.find([:dep1]).size).to eq 1
+    it 'accepts symbolized names' do
+      expect(registry.find(:dep2).name).to eq 'Dependency2'
     end
 
     context 'when trying to find non-existing dependency' do
       it 'raises an exception' do
-        expect { registry.find(['non-existing']) }.
+        expect { registry.find('non-existing') }.
           to raise_error(KeyError, /non-existing/)
-      end
-    end
-
-    context 'when passed an empty list' do
-      it 'returns an empty list' do
-        expect(registry.find([])).to eq []
       end
     end
   end
