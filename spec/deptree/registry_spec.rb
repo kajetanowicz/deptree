@@ -20,9 +20,9 @@ describe Deptree::Registry do
 
   describe '#find' do
     before do
-      registry.add('dep1', Deptree::Dependency.new('Dependency1'))
-      registry.add('dep2', Deptree::Dependency.new('Dependency2'))
-      registry.add('dep3', Deptree::Dependency.new('Dependency3'))
+      registry.add('dep1', Deptree::Dependency.new('Dependency1', [], double))
+      registry.add('dep2', Deptree::Dependency.new('Dependency2', [], double))
+      registry.add('dep3', Deptree::Dependency.new('Dependency3', [], double))
     end
 
     it 'finds dependency by name' do

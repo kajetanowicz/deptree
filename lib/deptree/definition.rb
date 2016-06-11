@@ -1,12 +1,12 @@
 module Deptree
-  class DefinitionContext < BasicObject
+  class Definition < BasicObject
 
-    def self.define_dependency(*args, &block)
+    def self.add(registry, args, block)
       parser = ArgumentsParser.new(args).parse!
 
-      Dependency.new(parser.name, parser.prerequisites).tap do |dependency|
-        context = self.new(dependency)
-        context.instance_eval(&block) if block_given?
+      Dependency.new(parser.name, parser.prerequisites, registry).tap do |dependency|
+        self.new(dependency).instance_eval(&block)
+        registry.add(dependency.name, dependency)
       end
     end
 

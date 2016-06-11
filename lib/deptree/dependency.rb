@@ -3,9 +3,9 @@ module Deptree
 
     attr_reader :name, :prerequisites, :actions
 
-    def initialize(name, prerequisites = [])
+    def initialize(name, prerequisites, registry)
       @name = name
-      @prerequisites = prerequisites
+      @prerequisites = PrerequisitesProxy.new(prerequisites, registry)
       @actions = Actions.new(self)
       @execution_context = Object.new
     end
@@ -17,6 +17,20 @@ module Deptree
     def run_action(name)
       if (action = @actions.find(name))
         action.run
+      end
+    end
+
+    class PrerequisitesProxy
+      include Enumerable
+
+      def initialize(names, registry)
+        @names, @registry = names, registry
+      end
+
+      def each(&block)
+        @names.each do |name|
+          block.call(@registry.find(name))
+        end
       end
     end
 

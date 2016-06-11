@@ -2,19 +2,17 @@ module Deptree
   module DSL
 
     def dependency(*args, &block)
-      DefinitionContext.define_dependency(*args, &block).tap do |dependency|
-        dependencies.add(dependency.name, dependency)
-      end
+      Definition.add(dependencies, args, block)
     end
 
     def configure(*names)
-      if names.empty?
-        runnables = dependencies.all
+      runnables = if names.empty?
+        dependencies.all
       else
-        runnables = names.map { |name| dependencies.find(name) }
+        names.map { |name| dependencies.find(name) }
       end
 
-      Resolver.resolve(runnables, dependencies).map do |dependency|
+      Resolver.resolve(runnables).each do |dependency|
         dependency.run_action(:configure)
       end
     end

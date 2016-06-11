@@ -1,44 +1,30 @@
 module Deptree
   class Resolver
-    def self.resolve(dependencies, registry)
+    def self.resolve(runnables)
+      new(runnables).sort
+    end
 
-      queue = dependencies.dup
-      closure = []
+    def initialize(runnables)
+      @runnables = runnables
+    end
 
-      while !queue.empty? do
-        d = queue.shift
-        unless closure.include?(d)
-          closure << d
-          prerequisites = d.prerequisites.map {|p| registry.find(p)}
-          prerequisites.map { |p| queue.push(p) }
-        end
-      end
-
-
-      incoming = {}
-      closure.each { |d| incoming[d.name] = 0 }
-
-      closure.each do |d|
-        d.prerequisites.each do |p|
-          incoming[p] += 1
-        end
-      end
+    def sort
+      closure = compute_closure
+      incoming = compute_incoming_edges(closure)
 
       if incoming.values.none?(&:zero?)
         fail CircularDependencyError
       end
 
       sorted = []
-      queue = incoming.keys.select { |name| incoming[name] == 0 }
+      queue = incoming.keys.select { |node| incoming[node] == 0 }
 
-      while !queue.empty? do
-        d = registry.find(queue.shift)
-        sorted << d
-        d.prerequisites.each do |p|
-          incoming[p] -= 1
-          if incoming[p] == 0
-            queue.push(p)
-          end
+      while (node = queue.shift) do
+        sorted << node
+
+        node.prerequisites.each do |child|
+          incoming[child] -= 1
+          queue.push(child) if incoming[child].zero?
         end
       end
 
@@ -47,6 +33,35 @@ module Deptree
       end
 
       sorted.reverse
+    end
+
+    private
+
+    def compute_closure
+      queue = @runnables.dup
+      closure = []
+
+      while (node = queue.shift) do
+        unless closure.include?(node)
+          closure << node
+          node.prerequisites.each { |child| queue.push(child) }
+        end
+      end
+
+      closure
+    end
+
+    def compute_incoming_edges(closure)
+      incoming = {}
+      closure.each { |node| incoming[node] = 0 }
+
+      closure.each do |node|
+        node.prerequisites.each do |child|
+          incoming[child] += 1
+        end
+      end
+
+      incoming
     end
   end
 end

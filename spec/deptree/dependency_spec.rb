@@ -1,7 +1,13 @@
 module Deptree
   describe Dependency do
 
-    subject(:dependency) { Dependency.new('foo', []) }
+    subject(:dependency) { Dependency.new('foo', [], Registry.new) }
+
+    describe '#prerequisites' do
+      it 'returns prerequisites proxy' do
+        expect(dependency.prerequisites).to be_a(Dependency::PrerequisitesProxy)
+      end
+    end
 
     describe '#add_action' do
       it 'returns an Action' do
