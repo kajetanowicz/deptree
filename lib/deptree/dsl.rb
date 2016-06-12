@@ -6,13 +6,7 @@ module Deptree
     end
 
     def configure(*names)
-      runnables = if names.empty?
-        dependencies.all
-      else
-        names.map { |name| dependencies.find(name) }
-      end
-
-      Resolver.resolve(runnables).each do |dependency|
+      Resolver.resolve(dependencies.select(*names)).each do |dependency|
         dependency.run_action(:configure)
       end
     end

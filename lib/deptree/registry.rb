@@ -14,8 +14,12 @@ module Deptree
       @dependencies.fetch(normalize(name))
     end
 
-    def all
-      @dependencies.values
+    def select(*names)
+      if names.empty?
+        @dependencies.values
+      else
+        names.map { |name| find(name) }
+      end
     end
 
     def include?(name)

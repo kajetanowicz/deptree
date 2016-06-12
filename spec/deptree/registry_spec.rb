@@ -41,7 +41,7 @@ describe Deptree::Registry do
     end
   end
 
-  describe '#all' do
+  describe '#select' do
     before do
       registry.add('dep1', double('Dependency1'))
       registry.add('dep2', double('Dependency2'))
@@ -49,8 +49,14 @@ describe Deptree::Registry do
       registry.add('dep4', double('Dependency4'))
     end
 
-    it 'returns all registered dependencies' do
-      expect(registry.all.size).to eq 4
+    it 'returns selected dependencies' do
+      expect(registry.select('dep1', 'dep3').size).to eq 2
+    end
+
+    context 'when called without any names' do
+      it 'returns all registered dependencies' do
+        expect(registry.select.size).to eq 4
+      end
     end
   end
 end
