@@ -53,6 +53,35 @@ describe '.configure' do
     expect(called.sort).to eq [:three, :two]
   end
 
+  it 'makes helpers available in the context of configure block' do
+    ARGS = []
+
+    application = Class.new do
+      extend Deptree::DSL
+
+      dependency :one do
+        configure do
+          foo(:one)
+        end
+      end
+
+      dependency :two do
+        configure do
+          foo(:two)
+        end
+      end
+
+      helpers do
+        def foo(name)
+          ARGS << name
+        end
+      end
+    end
+
+    application.configure
+    expect(ARGS.sort).to eq [:one, :two].sort
+  end
+
   it 'invokes indirect dependencies' do
     called = []
     application = Class.new do

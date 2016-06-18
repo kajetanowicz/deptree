@@ -1,7 +1,13 @@
 module Deptree
   describe Dependency do
-
-    subject(:dependency) { Dependency.new('foo', [], Registry.new) }
+    let(:configurable) do
+      double(
+        'Configurable',
+        dependencies: Deptree::Registry.new,
+        helpers: Module.new
+      )
+    end
+    subject(:dependency) { Dependency.new('foo', [], configurable) }
 
     describe '#prerequisites' do
       it 'returns prerequisites proxy' do

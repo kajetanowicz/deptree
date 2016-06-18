@@ -19,10 +19,18 @@ describe Deptree::Registry do
   end
 
   describe '#find' do
+    let(:configurable) do
+      double(
+        'Configurable',
+        dependencies: Deptree::Registry.new,
+        helpers: Module.new
+      )
+    end
+
     before do
-      registry.add('dep1', Deptree::Dependency.new('Dependency1', [], double))
-      registry.add('dep2', Deptree::Dependency.new('Dependency2', [], double))
-      registry.add('dep3', Deptree::Dependency.new('Dependency3', [], double))
+      registry.add('dep1', Deptree::Dependency.new('Dependency1', [], configurable))
+      registry.add('dep2', Deptree::Dependency.new('Dependency2', [], configurable))
+      registry.add('dep3', Deptree::Dependency.new('Dependency3', [], configurable))
     end
 
     it 'finds dependency by name' do

@@ -3,11 +3,11 @@ module Deptree
 
     attr_reader :name, :prerequisites, :actions
 
-    def initialize(name, prerequisites, registry)
+    def initialize(name, prerequisites, configurable)
       @name = name
-      @prerequisites = PrerequisitesProxy.new(prerequisites, registry)
+      @prerequisites = PrerequisitesProxy.new(prerequisites, configurable.dependencies)
       @actions = Actions.new(self)
-      @execution_context = Object.new
+      @execution_context = Object.new.tap { |ctx| ctx.extend(configurable.helpers) }
     end
 
     def add_action(name, &behaviour)
