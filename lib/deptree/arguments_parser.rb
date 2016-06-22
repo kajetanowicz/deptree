@@ -1,9 +1,6 @@
 module Deptree
   class ArgumentsParser
-
-    attr_reader :name
-
-    attr_reader :prerequisites
+    attr_reader :name, :prerequisites
 
     def initialize(args)
       @args = args

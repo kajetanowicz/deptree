@@ -27,6 +27,7 @@ module Deptree
     end
 
     private
+
     def normalize(name)
       name.to_s
     end

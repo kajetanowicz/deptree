@@ -3,10 +3,12 @@ module Deptree
 
     def self.add(configurable, args, block)
       parser = ArgumentsParser.new(args).parse!
+      prerequisites = Dependency::PrerequisitesProxy.new(parser.prerequisites, configurable.registry)
+      name = parser.name
 
-      Dependency.new(parser.name, parser.prerequisites, configurable).tap do |dependency|
+      Dependency.new(name, prerequisites, configurable.helpers).tap do |dependency|
         self.new(dependency).instance_eval(&block)
-        configurable.dependencies.add(dependency.name, dependency)
+        configurable.registry.add(dependency.name, dependency)
       end
     end
 
@@ -15,7 +17,8 @@ module Deptree
     end
 
     def method_missing(name, &behaviour)
-      @dependency.add_action(name, &behaviour)
+      @dependency.action(name, &behaviour)
     end
   end
+
 end

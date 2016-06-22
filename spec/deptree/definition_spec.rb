@@ -4,7 +4,7 @@ module Deptree
       let(:configurable) do
         double(
           'Configurable',
-          dependencies: Registry.new,
+          registry: Registry.new,
           helpers: Module.new
         )
       end

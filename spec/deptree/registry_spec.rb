@@ -1,6 +1,13 @@
 describe Deptree::Registry do
   let(:registry) { Deptree::Registry.new }
 
+  before do
+    registry.add('dep1', double('Dependency', name: 'Dependency1'))
+    registry.add('dep2', double('Dependency', name: 'Dependency2'))
+    registry.add('dep3', double('Dependency', name: 'Dependency3'))
+    registry.add('dep4', double('Dependency', name: 'Dependency4'))
+  end
+
   describe '#add' do
     it 'registers a dependency' do
       expect(registry).to_not include('dep_name')
@@ -19,20 +26,6 @@ describe Deptree::Registry do
   end
 
   describe '#find' do
-    let(:configurable) do
-      double(
-        'Configurable',
-        dependencies: Deptree::Registry.new,
-        helpers: Module.new
-      )
-    end
-
-    before do
-      registry.add('dep1', Deptree::Dependency.new('Dependency1', [], configurable))
-      registry.add('dep2', Deptree::Dependency.new('Dependency2', [], configurable))
-      registry.add('dep3', Deptree::Dependency.new('Dependency3', [], configurable))
-    end
-
     it 'finds dependency by name' do
       expect(registry.find('dep1').name).to eq 'Dependency1'
     end
@@ -50,13 +43,6 @@ describe Deptree::Registry do
   end
 
   describe '#select' do
-    before do
-      registry.add('dep1', double('Dependency1'))
-      registry.add('dep2', double('Dependency2'))
-      registry.add('dep3', double('Dependency3'))
-      registry.add('dep4', double('Dependency4'))
-    end
-
     it 'returns selected dependencies' do
       expect(registry.select('dep1', 'dep3').size).to eq 2
     end

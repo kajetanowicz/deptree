@@ -6,8 +6,8 @@ module Deptree
     end
 
     def configure(*names)
-      Resolver.resolve(dependencies.select(*names)).each do |dependency|
-        dependency.run_action(:configure)
+      Visitor.each(registry.select(*names)) do |dependency|
+        dependency.execute(:configure)
       end
     end
 
@@ -17,8 +17,8 @@ module Deptree
       @helpers
     end
 
-    def dependencies
-      @dependencies ||= Deptree::Registry.new
+    def registry
+      @registry ||= Deptree::Registry.new
     end
   end
 end

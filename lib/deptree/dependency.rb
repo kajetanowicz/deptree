@@ -3,48 +3,42 @@ module Deptree
 
     attr_reader :name, :prerequisites, :actions
 
-    def initialize(name, prerequisites, configurable)
+    def initialize(name, prerequisites, helpers)
       @name = name
-      @prerequisites = PrerequisitesProxy.new(prerequisites, configurable.dependencies)
+      @prerequisites = prerequisites
+      @helpers = helpers
       @actions = Actions.new(self)
-      @execution_context = Object.new.tap { |ctx| ctx.extend(configurable.helpers) }
     end
 
-    def add_action(name, &behaviour)
-      @actions.add(name, behaviour, @execution_context)
+    def action(name, &behaviour)
+      @actions.add(name, behaviour)
     end
 
-    def run_action(name)
+    def execute(name)
       if (action = @actions.find(name))
-        action.run
+        action.execute
       end
     end
 
-    class PrerequisitesProxy
-      include Enumerable
-
-      def initialize(names, registry)
-        @names, @registry = names, registry
-      end
-
-      def each(&block)
-        @names.each do |name|
-          block.call(@registry.find(name))
-        end
+    def execution_context
+      @execution_context ||= Object.new.tap do |ctx|
+        ctx.extend(@helpers)
       end
     end
+
 
     class Actions
-
       def initialize(dependency)
         @dependency, @actions = dependency, []
       end
 
-      def add(name, behaviour, execution_context)
+      def add(name, behaviour)
         if find(name)
           fail DuplicateActionError.new(@dependency.name, name)
         else
-          Action.new(name, behaviour, execution_context).tap { |action| @actions << action }
+          Action.new(name, behaviour, @dependency.execution_context).tap do |action|
+            @actions << action
+          end
         end
       end
 
@@ -61,12 +55,10 @@ module Deptree
       attr_reader :name
 
       def initialize(name, behaviour, context)
-        @name = name
-        @behaviour = behaviour
-        @context = context
+        @name, @behaviour, @context = name, behaviour, context
       end
 
-      def run
+      def execute
         @context.instance_eval(&@behaviour)
       end
 

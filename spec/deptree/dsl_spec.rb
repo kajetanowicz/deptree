@@ -20,7 +20,7 @@ describe Deptree::DSL do
     it 'allows to add a new dependency to the Registry' do
       host_class.dependency 'foo' do; end
 
-      expect(host_class.dependencies).to include 'foo'
+      expect(host_class.registry).to include 'foo'
     end
   end
 
