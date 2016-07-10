@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Deptree::VERSION
   spec.authors       = ["Andrzej Kajetanowicz"]
   spec.email         = ["Andrzej.Kajetanowicz@gmail.com"]
-  spec.summary       = %q{Simple way to manage configuration dependencies in your Ruby application.}
-  spec.description   = %q{Simple way to manage configuration dependencies in your Ruby application.}
-  spec.homepage      = ""
+  spec.summary       = %q{Easly manage initialization steps in your Ruby application.}
+  spec.description   = %q{Easly manage initialization steps in your Ruby application.}
+  spec.homepage      = "https://github.com/kajetanowicz/deptree"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
