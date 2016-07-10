@@ -6,10 +6,9 @@ module Deptree
       prerequisites = Dependency::PrerequisitesProxy.new(parser.prerequisites, configurable.registry)
       name = parser.name
 
-      Dependency.new(name, prerequisites, configurable.helpers).tap do |dependency|
-        self.new(dependency).instance_eval(&block)
-        configurable.registry.add(dependency.name, dependency)
-      end
+      dependency = Dependency.new(name, prerequisites, configurable.helpers)
+      new(dependency).instance_eval(&block)
+      configurable.registry.add(dependency.name, dependency)
     end
 
     def initialize(dependency)
